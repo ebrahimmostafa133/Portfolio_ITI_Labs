@@ -70,8 +70,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const revealObserver = new IntersectionObserver((entries, obs) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('show');
-                    obs.unobserve(entry.target);
+                    const target = entry.target;
+                    target.classList.add('show');
+                    // stagger child reveals when present
+                    const children = Array.from(target.querySelectorAll('.reveal-child'));
+                    children.forEach((c, i) => {
+                        // set slight staggered delay
+                        c.style.transitionDelay = `${i * 80}ms`;
+                    });
+                    obs.unobserve(target);
                 }
             });
         }, { threshold: 0.12 });

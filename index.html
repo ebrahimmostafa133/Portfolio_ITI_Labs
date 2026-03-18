@@ -57,10 +57,44 @@
         .cylinder .cylinder-fill { transition: height 900ms cubic-bezier(.2,.9,.2,1); box-shadow: inset 0 -6px 10px rgba(0,0,0,0.08); }
         .cylinder .cylinder-cap { box-shadow: 0 4px 10px rgba(0,0,0,0.12); }
         @media (prefers-color-scheme: dark) { .cylinder { border-color: rgba(255,255,255,0.04); } .cylinder .cylinder-cap { background: rgba(255,255,255,0.04); } }
+
+        /* Background animated blobs */
+        #bg-animations{ position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        #bg-animations .blob{ position: absolute; border-radius: 50%; filter: blur(80px); opacity: .6; mix-blend-mode: soft-light; transform-origin: center; will-change: transform, opacity; }
+        .blob-1{ width: 32rem; height: 32rem; background: radial-gradient(circle at 20% 30%, rgba(43,89,195,0.85), rgba(59,130,246,0.35)); left: -8rem; top: -6rem; animation: blobMove 12s ease-in-out infinite; }
+        .blob-2{ width: 28rem; height: 28rem; background: radial-gradient(circle at 80% 70%, rgba(16,185,129,0.7), rgba(6,95,70,0.16)); right: -10rem; bottom: -8rem; animation: blobMove2 14s ease-in-out infinite; }
+        .blob-3{ width: 20rem; height: 20rem; background: radial-gradient(circle at 50% 50%, rgba(236,72,153,0.55), rgba(124,58,237,0.2)); left: 60%; top: 30%; animation: blobMove 18s linear infinite; }
+
+        @keyframes blobMove{ 0%{ transform: translateY(0) rotate(0deg) scale(1);} 50%{ transform: translateY(-24px) rotate(12deg) scale(1.04);} 100%{ transform: translateY(0) rotate(0deg) scale(1);} }
+        @keyframes blobMove2{ 0%{ transform: translateX(0) rotate(0deg) scale(1);} 50%{ transform: translateX(-30px) rotate(-16deg) scale(1.03);} 100%{ transform: translateX(0) rotate(0deg) scale(1);} }
+
+        /* Reveal child (staggered) */
+        .reveal-child{ opacity: 0; transform: translateY(18px) scale(.98); transition: opacity .6s cubic-bezier(.2,.8,.2,1), transform .6s cubic-bezier(.2,.8,.2,1); will-change: opacity, transform; }
+        .reveal.show .reveal-child{ opacity: 1; transform: translateY(0) scale(1); }
+
+        /* Subtle 3D hover */
+        .tilt{ transform-style: preserve-3d; transition: transform 260ms ease-out; will-change: transform; }
+        .tilt:hover{ transform: translateY(-6px) rotateX(6deg) rotateY(-6deg); }
+
+        /* Link underline animation */
+        .underline-anim{ position: relative; }
+        .underline-anim::after{ content: ''; position: absolute; left: 0; bottom: -3px; height: 2px; width: 0; background: var(--underline-color,#2b59c3); transition: width .28s ease; }
+        .underline-anim:hover::after{ width: 100%; }
+
+        @media (prefers-reduced-motion: reduce){ *{ animation: none !important; transition: none !important; } }
     </style>
 </head>
 
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+
+    <!-- Decorative animated background blobs -->
+    <div id="bg-animations" aria-hidden="true">
+        <div class="blob blob-1" aria-hidden="true"></div>
+        <div class="blob blob-2" aria-hidden="true"></div>
+        <div class="blob blob-3" aria-hidden="true"></div>
+    </div>
+
+    <div id="content" class="relative z-10">
 
     <!-- Navbar -->
     <nav class="bg-white dark:bg-dark fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-800">
@@ -97,7 +131,7 @@
                     </svg>
                 </button>
 
-                <div class="hidden w-full md:block md:w-auto transition-all duration-300" id="navbar-default">
+    <div class="hidden w-full md:block md:w-auto transition-all duration-300" id="navbar-default">
                     <ul
                         class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-dark dark:border-gray-700">
                         <li><a href="#home"
@@ -287,7 +321,7 @@
             <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
                 <!-- Backend -->
                 <div
-                    class="bg-gray-50 dark:bg-dark-lighter rounded-xl p-6 hover:shadow-lg transition-all border border-gray-100 dark:border-gray-800 group">
+                    class="bg-gray-50 dark:bg-dark-lighter rounded-xl p-6 hover:shadow-lg transition-all border border-gray-100 dark:border-gray-800 group reveal-child tilt">
                     <div
                         class="h-12 w-12 bg-white dark:bg-gray-800 rounded-lg flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
                         <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -297,19 +331,17 @@
                     </div>
                     <h3 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Backend</h3>
                     <div class="flex flex-wrap gap-2">
-                        <span
-                            class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">Node.js</span>
-                        <span
-                            class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">Express</span>
-                        <span
-                            class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">MongoDB</span>
-                        <span
-                            class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">REST APIs</span>
+                        <span class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">Node.js</span>
+                        <span class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">Express</span>
+                        <span class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">MongoDB</span>
+                        <span class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">REST APIs</span>
+                        <span class="px-3 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full dark:bg-green-900 dark:text-green-300">Django</span>
+                        <span class="px-3 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full dark:bg-green-900 dark:text-green-300">Python</span>
                     </div>
                 </div>
                 <!-- Languages -->
                 <div
-                    class="bg-gray-50 dark:bg-dark-lighter rounded-xl p-6 hover:shadow-lg transition-all border border-gray-100 dark:border-gray-800 group">
+                    class="bg-gray-50 dark:bg-dark-lighter rounded-xl p-6 hover:shadow-lg transition-all border border-gray-100 dark:border-gray-800 group reveal-child tilt">
                     <div
                         class="h-12 w-12 bg-white dark:bg-gray-800 rounded-lg flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
                         <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -319,21 +351,19 @@
                     </div>
                     <h3 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Languages</h3>
                     <div class="flex flex-wrap gap-2">
-                        <span
-                            class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">HTML5</span>
-                        <span
-                            class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">CSS3</span>
-                        <span
-                            class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">TypeScript</span>
-                        <span
-                            class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">JavaScript
-                            (ES6+)</span>
+                        <span class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">C++</span>
+                        <span class="px-3 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full dark:bg-green-900 dark:text-green-300">Python</span>
+                        <span class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">Java</span>
+                        <span class="px-3 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full dark:bg-yellow-900 dark:text-yellow-300">JavaScript</span>
+                        <span class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-50 rounded-full dark:bg-blue-900 dark:text-blue-300">TypeScript</span>
+                        <span class="px-3 py-1 text-xs font-medium text-slate-800 bg-slate-100 rounded-full dark:bg-slate-800 dark:text-slate-200">HTML5</span>
+                        <span class="px-3 py-1 text-xs font-medium text-slate-800 bg-slate-100 rounded-full dark:bg-slate-800 dark:text-slate-200">CSS3</span>
                     </div>
                 </div>
 
                 <!-- Frameworks -->
                 <div
-                    class="bg-gray-50 dark:bg-dark-lighter rounded-xl p-6 hover:shadow-lg transition-all border border-gray-100 dark:border-gray-800 group">
+                    class="bg-gray-50 dark:bg-dark-lighter rounded-xl p-6 hover:shadow-lg transition-all border border-gray-100 dark:border-gray-800 group reveal-child tilt">
                     <div
                         class="h-12 w-12 bg-white dark:bg-gray-800 rounded-lg flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
                         <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -356,7 +386,7 @@
 
                 <!-- UI & Styling -->
                 <div
-                    class="bg-gray-50 dark:bg-dark-lighter rounded-xl p-6 hover:shadow-lg transition-all border border-gray-100 dark:border-gray-800 group">
+                    class="bg-gray-50 dark:bg-dark-lighter rounded-xl p-6 hover:shadow-lg transition-all border border-gray-100 dark:border-gray-800 group reveal-child tilt">
                     <div
                         class="h-12 w-12 bg-white dark:bg-gray-800 rounded-lg flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
                         <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -470,7 +500,7 @@
             <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 <!-- Bookstore (Latest Full-stack) -->
                 <div
-                    class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group">
+                    class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group reveal-child tilt">
                     <div class="h-48 bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
                         <img src="./assets/projects/bookstore.png"
                             alt="Bookstore"
@@ -494,7 +524,7 @@
                 </div>
                 <!-- Social Media App -->
                 <div
-                    class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group">
+                    class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group reveal-child tilt">
                     <div class="h-48 bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
                         <img src="./assets/projects/social.png"
                             alt="Social Media App"
@@ -519,7 +549,7 @@
                 </div>
                 <!-- E-commerce -->
                 <div
-                    class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group">
+                    class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group reveal-child tilt">
                     <div class="h-48 bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
                         <img src="./assets/projects/ecommerce.png"
                             alt="E-commerce"
@@ -545,7 +575,7 @@
 
                 <!-- Note Project -->
                 <div
-                    class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group">
+                    class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group reveal-child tilt">
                     <div class="h-48 bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
                         <img src="./assets/projects/note.png"
                             alt="Note Project"
@@ -572,7 +602,7 @@
 
                 <!-- Bookmarker -->
                 <div
-                    class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group">
+                    class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group reveal-child tilt">
                     <div class="h-48 bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
                         <img src="./assets/projects/bookmarker.png"
                             alt="Bookmarker"
@@ -599,7 +629,7 @@
 
                 <!-- Weather App -->
                 <div
-                    class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group">
+                    class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group reveal-child tilt">
                     <div class="h-48 bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
                         <img src="./assets/projects/weather.png"
                             alt="Weather App"
@@ -626,7 +656,7 @@
 
                 <!-- Mealify -->
                 <div
-                    class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group">
+                    class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group reveal-child tilt">
                     <div class="h-48 bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
                         <img src="./assets/projects/mealify.png"
                             alt="Mealify"
@@ -774,6 +804,8 @@
             </div>
         </div>
     </footer>
+
+    </div><!-- /#content -->
 
     <button id="back-to-top" aria-label="Back to top" title="Back to top" type="button">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:white">

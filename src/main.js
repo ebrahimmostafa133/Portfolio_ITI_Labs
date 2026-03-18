@@ -70,8 +70,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const revealObserver = new IntersectionObserver((entries, obs) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('show');
-                    obs.unobserve(entry.target);
+                    const target = entry.target;
+                    target.classList.add('show');
+                    // stagger child reveals when present
+                    const children = Array.from(target.querySelectorAll('.reveal-child'));
+                    children.forEach((c, i) => {
+                        // set slight staggered delay
+                        c.style.transitionDelay = `${i * 80}ms`;
+                    });
+                    obs.unobserve(target);
                 }
             });
         }, { threshold: 0.12 });
@@ -179,5 +186,111 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') refreshAndUpdate(); });
         window.addEventListener('focus', refreshAndUpdate);
         refreshBtn?.addEventListener('click', refreshAndUpdate);
+    })();
+
+    // Background fireworks controller with start/stop (respects prefers-reduced-motion)
+    const createFireworksController = () => {
+        if (typeof document === 'undefined') return { start: ()=>{}, stop: ()=>{}, running: ()=>false };
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return { start: ()=>{}, stop: ()=>{}, running: ()=>false };
+
+        let canvas = null, ctx = null, DPR = 1, rafId = null, periodicId = null;
+        let particles = [];
+        const maxParticles = 900; const gravity = 0.06; const friction = 0.99;
+        const palette = ['#FF5F6D','#FFC371','#7C4DFF','#18A999','#FFD166','#FF7AB6','#60A5FA'];
+        const contentEl = document.getElementById('content') || document.body;
+        let running = false;
+        let clickHandler = null, visibilityHandler = null, resizeHandler = null;
+
+        function rand(min,max){ return Math.random()*(max-min)+min; }
+
+        function setupCanvas(){
+            if (canvas) return;
+            canvas = document.createElement('canvas');
+            canvas.id = 'fireworks-canvas';
+            canvas.style.position = 'fixed'; canvas.style.left = '0'; canvas.style.top = '0';
+            canvas.style.width = '100%'; canvas.style.height = '100%'; canvas.style.zIndex = '5';
+            canvas.style.pointerEvents = 'none'; canvas.style.mixBlendMode = 'screen';
+            const bg = document.getElementById('bg-animations');
+            if (bg && bg.parentNode) bg.parentNode.insertBefore(canvas, contentEl); else document.body.appendChild(canvas);
+            ctx = canvas.getContext('2d', { alpha: true });
+            function resize(){ DPR = window.devicePixelRatio || 1; canvas.width = Math.floor(window.innerWidth * DPR); canvas.height = Math.floor(window.innerHeight * DPR); canvas.style.width = window.innerWidth + 'px'; canvas.style.height = window.innerHeight + 'px'; ctx.setTransform(DPR,0,0,DPR,0,0); }
+            resize();
+            resizeHandler = resize;
+            window.addEventListener('resize', resizeHandler);
+        }
+
+        function cleanupCanvas(){
+            if (!canvas) return;
+            window.removeEventListener('resize', resizeHandler);
+            if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
+            canvas = null; ctx = null; resizeHandler = null;
+        }
+
+        class Particle{
+            constructor(x,y,vx,vy,size,color,ttl){ this.x=x; this.y=y; this.vx=vx; this.vy=vy; this.size=size; this.color=color; this.ttl=ttl; this.life=ttl; this.alpha=1; }
+            update(){ this.vx *= friction; this.vy *= friction; this.vy += gravity; this.x += this.vx; this.y += this.vy; this.life--; this.alpha = Math.max(0, this.life/this.ttl); }
+            draw(){ ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.beginPath(); ctx.fillStyle = this.color; ctx.globalAlpha = this.alpha; ctx.shadowBlur = 12; ctx.shadowColor = this.color; ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill(); ctx.restore(); }
+        }
+
+        function createBurst(x,y,count){ for(let i=0;i<count;i++){ if(particles.length > maxParticles) break; const angle = Math.random()*Math.PI*2; const speed = rand(1.6,6.2); const vx = Math.cos(angle)*speed; const vy = Math.sin(angle)*speed; const color = palette[Math.floor(Math.random()*palette.length)]; const size = rand(1.6,4.2); const ttl = Math.floor(rand(40,100)); particles.push(new Particle(x,y,vx,vy,size,color,ttl)); } }
+
+        function animate(){ if(!ctx) return; ctx.clearRect(0,0, canvas.width/DPR, canvas.height/DPR); for(let i=particles.length-1;i>=0;i--){ const p=particles[i]; p.update(); if(p.life<=0 || p.y > (canvas.height/DPR + 200) || p.x < -200 || p.x > (canvas.width/DPR + 200)){ particles.splice(i,1); continue; } p.draw(); } rafId = requestAnimationFrame(animate); }
+
+        function start(){ if (running) return; setupCanvas(); running = true; particles.length = 0; animate(); periodicId = setInterval(()=>{ const x = rand(window.innerWidth*0.08, window.innerWidth*0.92); const y = rand(window.innerHeight*0.06, window.innerHeight*0.28); createBurst(x,y, Math.floor(rand(24,52))); }, 2600 + Math.random()*2600); clickHandler = (e)=>{ const x = e.clientX; const y = e.clientY; createBurst(x,y, Math.floor(rand(18,44))); }; contentEl.addEventListener('click', clickHandler); visibilityHandler = ()=>{ if(document.visibilityState === 'hidden'){ if(periodicId){ clearInterval(periodicId); periodicId = null; } if(rafId){ cancelAnimationFrame(rafId); rafId = null; } } else { if(!periodicId) periodicId = setInterval(()=>{ const x = rand(window.innerWidth*0.08, window.innerWidth*0.92); const y = rand(window.innerHeight*0.06, window.innerHeight*0.28); createBurst(x,y, Math.floor(rand(24,52))); }, 2600 + Math.random()*2600); if(!rafId) animate(); } }; document.addEventListener('visibilitychange', visibilityHandler); }
+
+        function stop(){ if (!running) return; running = false; if(rafId) { cancelAnimationFrame(rafId); rafId = null; } if(periodicId){ clearInterval(periodicId); periodicId = null; } if(clickHandler) { contentEl.removeEventListener('click', clickHandler); clickHandler = null; } if(visibilityHandler){ document.removeEventListener('visibilitychange', visibilityHandler); visibilityHandler = null; } cleanupCanvas(); }
+
+        return { start, stop, running: ()=>running };
+    };
+
+    const fireworks = createFireworksController();
+    // initial preference from localStorage (default true if not set). Disable on small screens.
+    const pref = localStorage.getItem('fireworks-enabled');
+    const defaultEnabled = (pref === null) ? true : (pref === 'true');
+    const allowOnScreen = window.innerWidth >= 700; // disable small screen by default
+    if (defaultEnabled && allowOnScreen) fireworks.start();
+
+    // wire navbar toggle
+    const fwToggle = document.getElementById('fireworks-toggle');
+    if (fwToggle) {
+        function updateToggleUI(){ const on = fireworks.running(); fwToggle.classList.toggle('active', on); fwToggle.setAttribute('aria-pressed', String(on)); }
+        updateToggleUI();
+        fwToggle.addEventListener('click', ()=>{
+            if (fireworks.running()){ fireworks.stop(); localStorage.setItem('fireworks-enabled','false'); }
+            else { fireworks.start(); localStorage.setItem('fireworks-enabled','true'); }
+            setTimeout(updateToggleUI, 80);
+        });
+    }
+
+    // Parallax hero layers (simple, performant)
+    (function heroParallax(){
+        const hero = document.getElementById('home');
+        if (!hero) return;
+        const layers = Array.from(hero.querySelectorAll('.hero-layer'));
+        if (!layers.length) return;
+
+        let ticking = false;
+        function onScroll(){
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(()=>{
+                const rect = hero.getBoundingClientRect();
+                const viewH = window.innerHeight;
+                const start = Math.max(0, -rect.top);
+                const max = Math.max(1, rect.height + viewH);
+                const pct = Math.min(1, Math.max(0, start / max));
+                layers.forEach(l => {
+                    const speed = parseFloat(l.dataset.speed || '0.2');
+                    const y = - (pct * 80 * speed); // translate a bit based on speed
+                    l.style.transform = `translate3d(0, ${y}px, 0) scale(1)`;
+                });
+                ticking = false;
+            });
+        }
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll);
+        // initial
+        onScroll();
     })();
 });

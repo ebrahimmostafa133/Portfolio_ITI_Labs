@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Portfolio</title>
     <link href="./dist/output.css" rel="stylesheet">
+    <meta name="description" content="Ebrahim Mostafa — Frontend Developer. I build responsive web apps with Angular and Tailwind CSS. Based in Cairo, Egypt.">
+    <meta property="og:title" content="Ebrahim Mostafa — Frontend Developer">
+    <meta property="og:description" content="Frontend Developer building responsive web apps with Angular and Tailwind CSS.">
+    <meta property="og:image" content="https://ui-avatars.com/api/?name=EM&background=2b59c3&color=fff&size=512">
+    <meta property="og:url" content="https://ebrahimmostafa133.github.io/Portfolio_ITI_Labs/">
+    <meta name="twitter:card" content="summary_large_image">
     <script>
         // It's best to inline this in `head` to avoid FOUC
         if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -14,6 +20,44 @@
             document.documentElement.classList.remove('dark')
         }
     </script>
+
+    <!-- Small custom styles (kept minimal so builds are unchanged) -->
+    <style>
+        /* Reveal on scroll */
+        .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s cubic-bezier(.2,.8,.2,1), transform .6s cubic-bezier(.2,.8,.2,1); will-change: opacity, transform; }
+        .reveal.show { opacity: 1; transform: translateY(0); }
+
+        /* Nav active state */
+        #navbar-default a.nav-active { color: #2b59c3 !important; font-weight: 700 !important; border-bottom: 2px solid #2b59c3; padding-bottom: 4px; }
+
+        /* Back to top */
+        #back-to-top { position: fixed; right: 1rem; bottom: 1rem; width: 44px; height: 44px; border-radius: 9999px; background: #2b59c3; color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 18px rgba(43,89,195,0.24); cursor: pointer; opacity: 0; transform: translateY(8px); transition: opacity .25s, transform .25s; z-index: 60; }
+        #back-to-top.show { opacity: 1; transform: translateY(0); }
+
+        /* Floating hero blob */
+        .hero-blob { animation: float 6s ease-in-out infinite; }
+        @keyframes float { 0% { transform: translateY(0) scale(1); } 50% { transform: translateY(-10px) scale(1.03); } 100% { transform: translateY(0) scale(1); } }
+
+        /* Copy email button */
+        .copy-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; background: transparent; border: 1px solid rgba(0,0,0,0.06); font-size: 0.85rem; cursor: pointer; }
+        @media (prefers-color-scheme: dark) { .copy-btn { border-color: rgba(255,255,255,0.06); } }
+
+        /* LeetCode card variants */
+        .leetcode-dark { display: none; }
+        .leetcode-light { display: block; }
+        html.dark .leetcode-dark { display: block; }
+        html.dark .leetcode-light { display: none; }
+
+        /* Activity badge */
+        .activity-badge { position: absolute; right: 0.75rem; top: 0.75rem; background: rgba(255,255,255,0.9); color: #111827; font-weight: 600; font-size: 0.75rem; padding: 6px 10px; border-radius: 999px; }
+        .dark .activity-badge { background: rgba(17,24,39,0.75); color: #fff; }
+
+        /* Cylinder visual */
+        .cylinder { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border: 1px solid rgba(0,0,0,0.04); position: relative; }
+        .cylinder .cylinder-fill { transition: height 900ms cubic-bezier(.2,.9,.2,1); box-shadow: inset 0 -6px 10px rgba(0,0,0,0.08); }
+        .cylinder .cylinder-cap { box-shadow: 0 4px 10px rgba(0,0,0,0.12); }
+        @media (prefers-color-scheme: dark) { .cylinder { border-color: rgba(255,255,255,0.04); } .cylinder .cylinder-cap { background: rgba(255,255,255,0.04); } }
+    </style>
 </head>
 
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
@@ -79,14 +123,14 @@
     <div class="h-16"></div>
 
     <!-- Home -->
-    <section id="home" class="bg-white dark:bg-dark pt-12 md:pt-24 pb-16">
+    <section id="home" class="bg-white dark:bg-dark pt-12 md:pt-24 pb-16 reveal">
         <div class="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12 items-center">
             <div class="mr-auto place-self-center lg:col-span-7">
                 <h1
                     class="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl lg:text-6xl dark:text-white">
                     Hi, I'm <span class="text-primary">Ebrahim Mostafa</span>
                 </h1>
-                <h2 class="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-6">Frontend Developer</h2>
+                <h2 class="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-6">Software Developer — Frontend & Backend</h2>
                 <p class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
                     Frontend Developer with experience in building responsive and dynamic web applications using
                     Angular. Skilled in creating clean user interfaces, handling form validation, managing state, and
@@ -101,11 +145,15 @@
                         class="inline-flex justify-center items-center py-3 px-8 text-base font-medium text-center text-gray-900 rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-800 dark:focus:ring-gray-800 transition-all">
                         View my work
                     </a>
+                    <a href="./assets/Ebrahim_Mostafa_CV.pdf" target="_blank" download
+                        class="inline-flex justify-center items-center py-3 px-6 text-base font-medium text-center text-gray-900 rounded-lg border border-gray-300 hover:bg-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-800 transition-all">
+                        Download CV
+                    </a>
                 </div>
             </div>
             <div class="hidden lg:mt-0 lg:col-span-5 lg:flex relative justify-center">
-                <div class="absolute w-[80%] h-[80%] bg-primary/20 rounded-full blur-3xl -z-10 animate-pulse"></div>
-                <img src="https://ui-avatars.com/api/?name=EM&background=2b59c3&color=fff&size=512&font-size=0.33&bold=true"
+                <div class="absolute w-[80%] h-[80%] bg-primary/20 rounded-full blur-3xl -z-10 animate-pulse hero-blob"></div>
+                <img src="./assets/image_profile.jpeg"
                     alt="Ebrahim Mostafa"
                     class="relative z-10 rounded-2xl shadow-2xl transform rotate-3 hover:rotate-0 transition-all duration-500 border-4 border-white dark:border-dark-lighter w-80 h-80 object-cover">
             </div>
@@ -113,7 +161,7 @@
     </section>
 
     <!-- About & Education -->
-    <section id="about" class="bg-gray-50 dark:bg-dark-lighter py-16 lg:py-24">
+    <section id="about" class="bg-gray-50 dark:bg-dark-lighter py-16 lg:py-24 reveal">
         <div class="max-w-screen-xl px-4 mx-auto">
             <div class="grid gap-12 lg:grid-cols-2 items-start">
                 <!-- About Me -->
@@ -148,6 +196,12 @@
                                     clip-rule="evenodd"></path>
                             </svg>
                             <span>Communication and Computer Engineering</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <svg class="flex-shrink-0 w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 14h-2v-2h2v2zm0-4h-2V6h2v6z" />
+                            </svg>
+                            <span>Problem solver — <a href="https://leetcode.com/u/Benzema_9/" target="_blank" class="text-primary font-medium">LeetCode</a> (solving daily)</span>
                         </li>
                     </ul>
                 </div>
@@ -213,7 +267,7 @@
     </section>
 
     <!-- Skills -->
-    <section id="skills" class="bg-white dark:bg-dark py-16 lg:py-24">
+    <section id="skills" class="bg-white dark:bg-dark py-16 lg:py-24 reveal">
         <div class="max-w-screen-xl px-4 mx-auto">
             <div class="text-center mb-16">
                 <div
@@ -231,6 +285,28 @@
             </div>
 
             <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+                <!-- Backend -->
+                <div
+                    class="bg-gray-50 dark:bg-dark-lighter rounded-xl p-6 hover:shadow-lg transition-all border border-gray-100 dark:border-gray-800 group">
+                    <div
+                        class="h-12 w-12 bg-white dark:bg-gray-800 rounded-lg flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 11c0-1.1.9-2 2-2h6v10a2 2 0 01-2 2H8a2 2 0 01-2-2V9h6c1.1 0 2 .9 2 2zM7 7V5a2 2 0 012-2h6a2 2 0 012 2v2"/>
+                        </svg>
+                    </div>
+                    <h3 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Backend</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span
+                            class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">Node.js</span>
+                        <span
+                            class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">Express</span>
+                        <span
+                            class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">MongoDB</span>
+                        <span
+                            class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">REST APIs</span>
+                    </div>
+                </div>
                 <!-- Languages -->
                 <div
                     class="bg-gray-50 dark:bg-dark-lighter rounded-xl p-6 hover:shadow-lg transition-all border border-gray-100 dark:border-gray-800 group">
@@ -332,8 +408,76 @@
         </div>
     </section>
 
+    <!-- Coding Activity -->
+    <section id="activity" class="bg-white dark:bg-dark py-12 lg:py-16 reveal">
+        <div class="max-w-screen-xl px-4 mx-auto">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center space-x-2 mb-4 bg-blue-50 dark:bg-blue-900/30 px-4 py-2 rounded-full">
+                    <span class="h-2 w-2 rounded-full bg-primary animate-pulse"></span>
+                    <span class="text-primary font-bold tracking-wider uppercase text-xs">Coding Activity</span>
+                </div>
+                <h2 class="mb-4 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white md:text-4xl">Problem Solver</h2>
+                <p class="font-light text-gray-500 sm:text-lg dark:text-gray-400 max-w-2xl mx-auto">I solve problems every day on LeetCode. Here’s a live snapshot of my recent activity — click to view the full profile.</p>
+            </div>
+
+            <div class="max-w-3xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+                    <div class="md:col-span-2">
+                        <a href="https://leetcode.com/u/Benzema_9/" target="_blank" class="block rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all">
+                            <div class="relative">
+                                <!-- Dark and Light variants: external card with local svg fallback -->
+                                <img src="https://leetcard.jacoblin.cool/Benzema_9?theme=dark" alt="LeetCode activity dark" onerror="this.onerror=null;this.src='./assets/projects/leetcode.svg'" class="w-full h-64 object-cover leetcode-dark">
+                                <img src="https://leetcard.jacoblin.cool/Benzema_9?theme=light" alt="LeetCode activity light" onerror="this.onerror=null;this.src='./assets/projects/leetcode-light.svg'" class="w-full h-64 object-cover leetcode-light">
+
+                                <div class="activity-badge">Solving daily • Live</div>
+                                <div class="absolute left-4 bottom-4 bg-black/60 dark:bg-black/50 text-white px-3 py-2 rounded backdrop-blur-sm">
+                                    <div class="text-sm font-semibold">LeetCode — Benzema_9</div>
+                                    <div class="text-xs opacity-90">I solve problems every day — click to view full profile</div>
+                                </div>
+                            </div>
+                        </a>
+                        <div id="leetcode-calendar" class="mt-4 px-2"></div>
+                    </div>
+
+                    <div class="md:col-span-1 bg-gray-50 dark:bg-dark-lighter rounded-xl p-4 border border-gray-100 dark:border-gray-800">
+                        <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Activity Summary</h4>
+                        <div id="leetcode-activity" class="flex items-end justify-between gap-4">
+                            <div class="flex-1 text-center">
+                                <div class="inline-block w-16 h-40 bg-gray-100 dark:bg-gray-900 rounded-full relative overflow-hidden mx-auto cylinder" data-key="submissionsPastYear" data-max="1000">
+                                    <div class="cylinder-fill absolute left-0 right-0 bottom-0 bg-gradient-to-b from-primary to-primary-dark" style="height:0%"></div>
+                                    <div class="cylinder-cap absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-3 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
+                                </div>
+                                <div class="mt-3 text-sm font-semibold" data-label="submissions">--</div>
+                                <div class="text-xs text-gray-500">Submissions (1y)</div>
+                            </div>
+
+                            <div class="flex-1 text-center">
+                                <div class="inline-block w-16 h-40 bg-gray-100 dark:bg-gray-900 rounded-full relative overflow-hidden mx-auto cylinder" data-key="totalActiveDays" data-max="365">
+                                    <div class="cylinder-fill absolute left-0 right-0 bottom-0 bg-gradient-to-b from-emerald-400 to-emerald-600" style="height:0%"></div>
+                                    <div class="cylinder-cap absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-3 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
+                                </div>
+                                <div class="mt-3 text-sm font-semibold" data-label="activeDays">--</div>
+                                <div class="text-xs text-gray-500">Active days (1y)</div>
+                            </div>
+
+                            <div class="flex-1 text-center">
+                                <div class="inline-block w-16 h-40 bg-gray-100 dark:bg-gray-900 rounded-full relative overflow-hidden mx-auto cylinder" data-key="maxStreak" data-max="365">
+                                    <div class="cylinder-fill absolute left-0 right-0 bottom-0 bg-gradient-to-b from-yellow-400 to-yellow-600" style="height:0%"></div>
+                                    <div class="cylinder-cap absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-3 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
+                                </div>
+                                <div class="mt-3 text-sm font-semibold" data-label="maxStreak">--</div>
+                                <div class="text-xs text-gray-500">Max streak</div>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-xs text-gray-500">Updated: <span id="leetcode-activity-updated">—</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Projects -->
-    <section id="projects" class="bg-gray-50 dark:bg-dark-lighter py-16 lg:py-24">
+    <section id="projects" class="bg-gray-50 dark:bg-dark-lighter py-16 lg:py-24 reveal">
         <div class="max-w-screen-xl px-4 mx-auto">
             <div class="text-center mb-16">
                 <div
@@ -350,11 +494,35 @@
             </div>
 
             <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                <!-- Bookstore (Latest Full-stack) -->
+                <div
+                    class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group">
+                    <div class="h-48 bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
+                        <img src="./assets/projects/bookstore.png"
+                            alt="Bookstore"
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <span class="absolute top-3 left-3 bg-primary text-white text-xs font-semibold px-2 py-1 rounded">Latest — Front & Back</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">Bookstore (Latest)</h3>
+                        <p class="mb-4 text-gray-500 dark:text-gray-400 text-sm">Currently building this full-stack bookstore — working on both front-end and back-end.</p>
+                        <div class="flex space-x-4">
+                            <a href="https://book-store-front-end-angular.vercel.app/login" target="_blank"
+                                class="text-primary hover:text-primary-dark font-medium inline-flex items-center">
+                                Live Demo <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14">
+                                    </path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
                 <!-- Social Media App -->
                 <div
                     class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group">
                     <div class="h-48 bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
-                        <img src="https://ui-avatars.com/api/?name=Social&background=7c3aed&color=fff&size=512&font-size=0.33"
+                        <img src="./assets/projects/social.png"
                             alt="Social Media App"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
@@ -379,7 +547,7 @@
                 <div
                     class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group">
                     <div class="h-48 bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
-                        <img src="https://ui-avatars.com/api/?name=E-Com&background=2b59c3&color=fff&size=512&font-size=0.33"
+                        <img src="./assets/projects/ecommerce.png"
                             alt="E-commerce"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
@@ -405,7 +573,7 @@
                 <div
                     class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group">
                     <div class="h-48 bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
-                        <img src="https://ui-avatars.com/api/?name=Notes&background=1e40af&color=fff&size=512&font-size=0.33"
+                        <img src="./assets/projects/note.png"
                             alt="Note Project"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
@@ -432,7 +600,7 @@
                 <div
                     class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group">
                     <div class="h-48 bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
-                        <img src="https://ui-avatars.com/api/?name=BM&background=0f172a&color=fff&size=512&font-size=0.33"
+                        <img src="./assets/projects/bookmarker.png"
                             alt="Bookmarker"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
@@ -459,7 +627,7 @@
                 <div
                     class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group">
                     <div class="h-48 bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
-                        <img src="https://ui-avatars.com/api/?name=W&background=3b82f6&color=fff&size=512&font-size=0.33"
+                        <img src="./assets/projects/weather.png"
                             alt="Weather App"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
@@ -486,7 +654,7 @@
                 <div
                     class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group">
                     <div class="h-48 bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
-                        <img src="https://ui-avatars.com/api/?name=Meal&background=ef4444&color=fff&size=512&font-size=0.33"
+                        <img src="./assets/projects/mealify.png"
                             alt="Mealify"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
@@ -512,7 +680,7 @@
                 <div
                     class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group">
                     <div class="h-48 bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
-                        <img src="https://ui-avatars.com/api/?name=Quote&background=10b981&color=fff&size=512&font-size=0.33"
+                        <img src="./assets/projects/quote.png"
                             alt="Quote Generator"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
@@ -540,7 +708,7 @@
     </section>
 
     <!-- Contact -->
-    <section id="contact" class="bg-white dark:bg-dark py-16 lg:py-24">
+    <section id="contact" class="bg-white dark:bg-dark py-16 lg:py-24 reveal">
         <div class="py-8 lg:py-16 px-4 mx-auto max-w-screen-md">
             <div class="text-center mb-10">
                 <div
@@ -567,7 +735,8 @@
                                     </path>
                                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
                                 </svg>
-                                <span>ibrahimmostafa9939@gmail.com</span>
+                                <span id="contact-email">ibrahimmostafa9939@gmail.com</span>
+                                <button id="copy-email-btn" class="copy-btn" type="button" aria-label="Copy email">Copy</button>
                             </li>
                             <li class="flex items-center space-x-3">
                                 <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
@@ -632,6 +801,11 @@
         </div>
     </footer>
 
+    <button id="back-to-top" aria-label="Back to top" title="Back to top" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:white">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"></path>
+        </svg>
+    </button>
     <script src="./src/main.js"></script>
 </body>
 

@@ -1,0 +1,33 @@
+name: Update LeetCode Card
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # daily at 00:00 UTC
+  workflow_dispatch:
+
+jobs:
+  fetch-card:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Fetch LeetCode SVGs (dark & light)
+        run: |
+          mkdir -p assets/projects
+          curl -sL "https://leetcard.jacoblin.cool/Benzema_9?theme=dark" -o assets/projects/leetcode.svg
+          curl -sL "https://leetcard.jacoblin.cool/Benzema_9?theme=light" -o assets/projects/leetcode-light.svg
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/projects/leetcode.svg assets/projects/leetcode-light.svg || true
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: update LeetCode cards (daily)"
+            git push
+          else
+            echo "No changes to commit"
+          fi

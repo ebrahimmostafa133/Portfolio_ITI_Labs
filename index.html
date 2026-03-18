@@ -426,8 +426,8 @@
                         <a href="https://leetcode.com/u/Benzema_9/" target="_blank" class="block rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all">
                             <div class="relative">
                                 <!-- Dark and Light variants: external card with local svg fallback -->
-                                <img src="https://leetcard.jacoblin.cool/Benzema_9?theme=dark" alt="LeetCode activity dark" onerror="this.onerror=null;this.src='./assets/projects/leetcode.svg'" class="w-full h-64 object-cover leetcode-dark">
-                                <img src="https://leetcard.jacoblin.cool/Benzema_9?theme=light" alt="LeetCode activity light" onerror="this.onerror=null;this.src='./assets/projects/leetcode-light.svg'" class="w-full h-64 object-cover leetcode-light">
+                                <img id="leetcard-dark" data-src="https://leetcard.jacoblin.cool/Benzema_9?theme=dark" src="https://leetcard.jacoblin.cool/Benzema_9?theme=dark" alt="LeetCode activity dark" onerror="this.onerror=null;this.src='./assets/projects/leetcode.svg'" class="w-full h-64 object-cover leetcode-dark">
+                                <img id="leetcard-light" data-src="https://leetcard.jacoblin.cool/Benzema_9?theme=light" src="https://leetcard.jacoblin.cool/Benzema_9?theme=light" alt="LeetCode activity light" onerror="this.onerror=null;this.src='./assets/projects/leetcode-light.svg'" class="w-full h-64 object-cover leetcode-light">
 
                                 <div class="activity-badge">Solving daily • Live</div>
                                 <div class="absolute left-4 bottom-4 bg-black/60 dark:bg-black/50 text-white px-3 py-2 rounded backdrop-blur-sm">
@@ -437,6 +437,11 @@
                             </div>
                         </a>
                         <!-- kept only the LeetCode card; activity diagram removed per request -->
+                        <div class="mt-3 flex items-center justify-between">
+                            <div class="text-sm text-gray-700 dark:text-gray-300">Solved: <strong id="live-solved">--</strong></div>
+                            <div class="text-xs text-gray-500">Last update: <span id="live-solved-updated">—</span></div>
+                            <button id="refresh-leetcode" class="ml-4 inline-flex items-center px-3 py-2 border rounded text-sm text-gray-700 dark:text-gray-200">Refresh</button>
+                        </div>
                     </div>
 
                     <!-- Activity diagram removed as requested -->

@@ -123,5 +123,61 @@ document.addEventListener('DOMContentLoaded', () => {
         backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
     }
 
-    // Activity diagram removed — no dynamic LeetCode activity rendering required
+    // Live LeetCode refresh: reload card image and attempt to fetch fresh stats
+    (function leetLive(){
+        const darkImg = document.getElementById('leetcard-dark');
+        const lightImg = document.getElementById('leetcard-light');
+        const liveSolvedEl = document.getElementById('live-solved');
+        const liveUpdatedEl = document.getElementById('live-solved-updated');
+        const refreshBtn = document.getElementById('refresh-leetcode');
+
+        function bumpUrl(base){
+            if(!base) return base;
+            try { const u = new URL(base); u.searchParams.set('_', Date.now()); return u.toString(); } catch(e) { return base + (base.includes('?') ? '&' : '?') + '_=' + Date.now(); }
+        }
+
+        function refreshImgs(){
+            if(darkImg){ const base = darkImg.dataset?.src || darkImg.src; darkImg.src = bumpUrl(base); }
+            if(lightImg){ const base = lightImg.dataset?.src || lightImg.src; lightImg.src = bumpUrl(base); }
+        }
+
+        async function fetchGraphQLStats(){
+            try {
+                const q = 'query getUserSubmitStats($username:String!){matchedUser(username:$username){submitStats{acSubmissionNum{difficulty count submissions}}}}';
+                const res = await fetch('https://leetcode.com/graphql', { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ query: q, variables: { username: 'Benzema_9' } }), cache: 'no-store' });
+                if(!res.ok) throw new Error('status '+res.status);
+                const js = await res.json();
+                const arr = js?.data?.matchedUser?.submitStats?.acSubmissionNum;
+                if(arr && arr.length){ const all = arr.find(a=>a.difficulty==='All') || arr[0]; if(all && liveSolvedEl){ liveSolvedEl.textContent = all.count; liveUpdatedEl.textContent = new Date().toLocaleTimeString(); return true; } }
+            } catch(e){ console.debug('LeetCode GraphQL error', e && e.message); }
+            return false;
+        }
+
+        async function fetchLeetcardSVG(){
+            try {
+                const base = (document.documentElement.classList.contains('dark') ? (darkImg?.dataset?.src || darkImg?.src) : (lightImg?.dataset?.src || lightImg?.src));
+                if(!base) return false;
+                const url = bumpUrl(base);
+                const res = await fetch(url, { cache: 'no-store' });
+                if(!res.ok) throw new Error('status '+res.status);
+                const txt = await res.text();
+                const m = txt.match(/<text[^>]*id="total-solved-text"[^>]*>([\d,]+)/i) || txt.match(/>([\d,]+)\s*Solved/i);
+                if(m){ const n = Number(m[1].replace(/,/g,'')); if(liveSolvedEl){ liveSolvedEl.textContent = n; liveUpdatedEl.textContent = new Date().toLocaleTimeString(); return true; } }
+            } catch(e){ console.debug('Leetcard fetch failed', e && e.message); }
+            return false;
+        }
+
+        async function refreshAndUpdate(){
+            refreshImgs();
+            const ok = await fetchGraphQLStats();
+            if(!ok) await fetchLeetcardSVG();
+        }
+
+        // initial + periodic + focus refresh
+        setTimeout(refreshAndUpdate, 600);
+        const timer = setInterval(refreshAndUpdate, 30 * 1000);
+        document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') refreshAndUpdate(); });
+        window.addEventListener('focus', refreshAndUpdate);
+        refreshBtn?.addEventListener('click', refreshAndUpdate);
+    })();
 });
